@@ -4,18 +4,29 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Primaire citoyenne FREXIT</title>
+  <title>Primaire citoyenne FREXIT 🇨🇵</title>
 </head>
 <body>
-  <div>
-    <h1>Primaire citoyenne FREXIT</h1>
+  <div id="content">
+    <div class="header">
+      <h1><font color="002654">Primaire</font>&nbsp;<font color="FFFFFF">Citoyenne</font>&nbsp;<font color="ED2939">FREXIT</font>&nbsp;🇨🇵</h1>
+      <p>Inscrivez-vous et participez à la première<br><font color="002654">Primaire</font>&nbsp;<font color="FFFFFF">Citoyenne</font>&nbsp;<font color="ED2939">FREXIT</font><br></p>
+      <div style="padding-top:10px; padding-bottom: 10px">
+        <span>Accédez à la Primaire sur Telegram&nbsp;&nbsp;👉&nbsp;&nbsp;&nbsp;</span>
+        <a href="https://t.me/Primaire_Citoyenne_FREXIT_Bot"><img src="assets/frexit.jpeg" style="vertical-align: middle; max-width: 50px; border-radius: 50%" width="100px;"/></a>
+      </div>
+      <div>
+        <span>Accédez au canal INFO de la Primaire 👉&nbsp;</span>
+        <a href="https://t.me/FREXIT_InfoPrimaireCitoyenne"><img src="assets/info.jpeg" style="vertical-align: middle; max-width: 50px; border-radius: 50%" width="100px;"/></a>
+      </div>
+    </div>
+    <div class="chart">
+      <a class="button" routerLink="inscrits" routerLinkActive="activebutton" [routerLinkActiveOptions]="{exact:true}">Nombre d'inscrits</a>
+      <a class="button" routerLink="resultats" routerLinkActive="activebutton">Résultats</a>
+    </div>
   </div>
-  <div>
-    <!-- <a class = "button" routerLink="bar" routerLinkActive="activebutton">Bar</a> -->
-    <a class = "button" routerLink="inscrits" routerLinkActive="activebutton">Nombre d'inscrits en temps réel</a>
-    <!--<a class = "button" routerLink="pie" routerLinkActive="activebutton">Pie</a> -->
-    <a class = "button" routerLink="resultats" routerLinkActive="activebutton">Résultats en temps réel</a>
-    <!-- <a class = "button" routerLink="pie" routerLinkActive="activebutton">Pie</a> -->
-  </div>
+  <router-outlet></router-outlet>
 </body>
 </html>
+
+

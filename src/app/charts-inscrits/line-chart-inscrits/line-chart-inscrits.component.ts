@@ -4,12 +4,32 @@ import { io } from 'socket.io-client';
 import { BACKEND_URL } from '../../../config';
 
 const socket = io(BACKEND_URL);
+// Override default settings
+Chart.defaults.color = '#000000'; // Change default color to red
+Chart.defaults.plugins.legend.labels.pointStyle = 'circle' // Change default color to red
+Chart.defaults.plugins.legend.labels.font = { size: 22 };
+Chart.defaults.font.size = 16;
+Chart.defaults.elements.line.borderColor = '#002654';
+Chart.defaults.elements.line.borderWidth = 2;
+Chart.defaults.datasets.line.pointRadius = 4;
+Chart.defaults.datasets.line.pointHoverRadius = 8;
+Chart.defaults.datasets.line.pointBackgroundColor = '#ED2939';
+
+// Calculate aspect ratio based on chart size or screen size
+const getAspectRatioConstant = (): number => {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  return Math.min(screenWidth, screenHeight) < 500 ? 1 : 2; // Example: 1 for small screens, 2 for larger screens
+};
+const aspectRatioConstant = getAspectRatioConstant();
 
 @Component({
   selector: 'app-line-chart-inscrits',
   templateUrl: './line-chart-inscrits.component.html',
   styleUrls: ['./line-chart-inscrits.component.css'],
 })
+
+
 export class LineChartInscritsComponent {
   public chart: any;
   private labeldata: any[] = [];
@@ -20,7 +40,6 @@ export class LineChartInscritsComponent {
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit()')
       this.labeldata = [];
       this.realdata = [];
       this.colordata = [];
@@ -28,11 +47,9 @@ export class LineChartInscritsComponent {
       socket.emit("get-inscrits");
 
       socket.on('inscrits', (data: {day: number, numberRegistered: number}[]) => {
-        console.log('Received JSON data from server:', data);
         // Handle the received JSON data here
         if (data != null) {
           const cdata = this.convertDataArray(data);
-          console.log('Converted data :', cdata);
 
           this.labeldata = [];
           this.realdata = [];
@@ -49,14 +66,13 @@ export class LineChartInscritsComponent {
 
   // Perform cleanup tasks here
   ngOnDestroy(): void {
-    console.log('ngOnDestroy()')
     // Unsubscribe from observables, clear timers, etc
     socket.off('inscrits');
   }
 
   createChart(labeldata: any, realdata: any, colordata: any) {
     if (!this.chart) {
-      console.log("Chart does not exist. Create-it...");
+      // console.log("Chart does not exist. Create-it...");
       this.chart = new Chart("MyChart", {
         type: 'line',
         data: {
@@ -70,13 +86,32 @@ export class LineChartInscritsComponent {
           ]
         },
         options: {
-          aspectRatio: 2,
+          aspectRatio: aspectRatioConstant,
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Nombre cumulés d'inscrits (en temps réel)"
+            },
+            legend: {
+                labels: {
+                    font: {
+                        size: (context) => {
+                            // Adjust font size based on chart size or screen size
+                            const width = context.chart.width || 0;
+                            const height = context.chart.height || 0;
+                            return Math.min(width, height) < 400 ? 14 : 24; // Example: 10 for small screens, 14 for larger screens
+                        }
+                    }
+                }
+            }
+          },
         }
       });
     }
     else {
       if (!this.compareRealData(this.chart.data.datasets[0].data, realdata)) {
-        console.log("Update Chart...");
+        // console.log("Update Chart...");
         this.chart.data = {
           labels: labeldata,
           datasets: [
@@ -94,8 +129,6 @@ export class LineChartInscritsComponent {
 
   compareRealData(rd1: any, rd2: any): boolean {
     // Sort arrays by listName
-    console.log(rd1);
-    console.log(rd2);
     for (let i = 0; i < rd2.length; i++) {
       if (rd1[i] !== rd2[i]) {
         return false;

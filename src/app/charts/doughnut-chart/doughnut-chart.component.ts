@@ -5,6 +5,14 @@ import { BACKEND_URL } from '../../../config';
 // import { ChartsService } from '../charts.service';
 const socket = io(BACKEND_URL);
 
+// Calculate aspect ratio based on chart size or screen size
+const getAspectRatioConstant = (): number => {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  return Math.min(screenWidth, screenHeight) < 600 ? 1 : 2; // Example: 1 for small screens, 2 for larger screens
+};
+const aspectRatioConstant = getAspectRatioConstant();
+
 @Component({
   selector: 'app-doughnut-chart',
   templateUrl: './doughnut-chart.component.html',
@@ -20,12 +28,6 @@ export class DoughnutChartComponent {
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit()')
-    // Poll every 5 seconds (adjust the interval as needed)
-    // interval(this.pollDelay).pipe(
-    //   startWith(0),
-    //   switchMap(() => this.service.getChartInfo())
-    // ).subscribe((response) => {
       this.labeldata = [];
       this.realdata = [];
       this.colordata = [];
@@ -34,7 +36,6 @@ export class DoughnutChartComponent {
 
       socket.on('votes', (data: {listName: string, numberVotes: number, colorcode: string}[]) => {
 
-      console.log('Received JSON data from server:', data);
       // Handle the received JSON data here
       if (data != null) {
         this.labeldata = [];
@@ -49,24 +50,17 @@ export class DoughnutChartComponent {
       }
 
     });
-
-
-        // this.chartInfo = response;
-        // console.log(this.chartInfo);
-
-      // });
   }
 
   // Perform cleanup tasks here
   ngOnDestroy(): void {
     // Unsubscribe from observables, clear timers, etc
-    console.log('ngOnDestroy()')
     socket.off('votes');
   }
 
   createChart(labeldata: any, realdata: any, colordata: any) {
     if (!this.chart) {
-      console.log("Chart does not exist. Create-it...");
+      // console.log("Chart does not exist. Create-it...");
       this.chart = new Chart("MyChart", {
         type: 'doughnut',
         data: {
@@ -80,13 +74,14 @@ export class DoughnutChartComponent {
           ]
         },
         options: {
-          aspectRatio: 2,
+          aspectRatio: aspectRatioConstant,
+          responsive: true,
         }
       });
     }
     else {
       if (!this.compareRealData(this.chart.data.datasets[0].data, realdata)) {
-        console.log("Update Chart...");
+        // console.log("Update Chart...");
         this.chart.data = {
           labels: labeldata,
           datasets: [
@@ -103,8 +98,6 @@ export class DoughnutChartComponent {
   }
   compareRealData(rd1: any, rd2: any): boolean {
     // Sort arrays by listName
-    console.log(rd1);
-    console.log(rd2);
     for (let i = 0; i < rd2.length; i++) {
       if (rd1[i] !== rd2[i]) {
         return false;
